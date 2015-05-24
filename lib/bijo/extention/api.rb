@@ -1,3 +1,5 @@
+require 'json'
+require 'net/http'
 module Api
   #type=rand&count=10&format=xml
   BASE_API_URL = 'http://bjin.me/api/'
@@ -12,6 +14,13 @@ module Api
         hash.store('type', "rand")
       end
     }
-    BASE_API_URL + "?" + params.map{|key, value| URI.encode(key.to_s) + "=" + URI.encode(value.to_s)}.join("&")
+    url = BASE_API_URL + "?" + params.map{|key, value| URI.encode(key.to_s) + "=" + URI.encode(value.to_s)}.join("&")
+    parse_json(url)
+  end
+
+  def parse_json(url)
+    response = Net::HTTP.get_response(URI.parse(url))
+    json = JSON.parser.new(response.body)
+    json.parse
   end
 end
